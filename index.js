@@ -3,7 +3,6 @@ var INTERVAL = 100;
 var objects = [];
 var cnv = document.querySelector('#test'),
     ctx = cnv.getContext('2d');
-
 var collider = new Collider();
 collider.gameField = new Polygon([[0,0],[cnv.width,0],[cnv.width,cnv.height],[0,cnv.height]]);
 
@@ -24,10 +23,10 @@ function gameloop() {
     ctx.clearRect(0, 0, cnv.width, cnv.height);
     for (var i = 0; i < objects.length; i++) {
         var obj = objects[i];
-        obj.stroke(ctx);
-        obj.fill(ctx);
+        obj.draw(ctx);
         obj.move();
     }
+
     collider.collideWithField();
 }
 function run() {

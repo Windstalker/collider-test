@@ -11,6 +11,6 @@ Collider.prototype.collideWithField = function () {
     var obj;
     for (var i = 0; i < this.objects.length; i++) {
         obj = this.objects[i];
-        obj.collidesWithBorders(this.gameField);
+		obj.collidesWithBorders(this.gameField);
     }
 };
