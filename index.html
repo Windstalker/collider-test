@@ -3,13 +3,16 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Collider Test</title>
+    <script type="text/javascript" src="lib/raf.js"></script>
     <script type="text/javascript" src="lib/vector.js"></script>
     <script type="text/javascript" src="lib/geometry.js"></script>
-    <script type="text/javascript" src="src/animator.js"></script>
     <script type="text/javascript" src="src/collider.js"></script>
 </head>
 <body>
-    <canvas width="300" height="300" id="test" style="border: 1px solid black"></canvas>
+    <canvas id="test"></canvas>
     <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript">
+        var game = new Game('#test');
+    </script>
 </body>
 </html>

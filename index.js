@@ -1,45 +1,127 @@
-var tid = null;
-var INTERVAL = 100;
-var objects = [];
-var cnv = document.querySelector('#test'),
-    ctx = cnv.getContext('2d');
-var collider = new Collider();
-collider.gameField = new Polygon([[0,0],[cnv.width,0],[cnv.width,cnv.height],[0,cnv.height]]);
+var Game = function (el) {
+    this.cnv = typeof el === 'string' ? document.querySelector(el) : el;
+    this.cnv.style.border = "1px solid black";
+    this.ctx = this.cnv.getContext('2d');
 
-// Custom objects
-var someBox = new Polygon([[0,0],[20,0],[20,10],[0,10]]);
-someBox.velocity = new Vector(5,5);
-objects.push(someBox);
+    this.width = this.cnv.width = 300;
+    this.height = this.cnv.height = 300;
 
-var someCircle = new Circle(10, 70, 50);
-someCircle.velocity = new Vector(12,8);
-objects.push(someCircle);
+    this.raf = null;
+    this.tid = null;
+    this.INTERVAL = 100;
+    this.GAME_SPEED = 1; // factor for slow down or speed up the game, "1" - regular speed
 
-// Adding to collider
+    this.objects = [];
+    this.collider = new Collider();
 
-collider.addObject.apply(collider, objects);
+    this.init();
+};
+Game.prototype.init = function () {
+    var circle = null,
+        polygon = null,
+        basicVelocity = 100;
 
-function gameloop() {
-    ctx.clearRect(0, 0, cnv.width, cnv.height);
-    for (var i = 0; i < objects.length; i++) {
-        var obj = objects[i];
-        obj.draw(ctx);
-        obj.move();
+    for (var i = 0, r, x, y, w, h; i < 3; i++) {
+        r = (Math.random() * 20 + 10) >> 0;
+        x = ((this.width - 2 * r) * Math.random() + r) >> 0;
+        y = ((this.height - 2 * r) * Math.random() + r) >> 0;
+
+        circle = new Circle(r, x, y);
+        circle.velocity = new Vector(Math.random() * 20 + basicVelocity >> 0, Math.random() * 20 + basicVelocity >> 0);
+//        circle.velocity = new Vector(50, 50);
+
+        this.objects.push(circle);
+
+        w = (Math.random() * 20 + 10) >> 0;
+        h = (Math.random() * 20 + 10) >> 0;
+        x = (this.width - w) * Math.random() >> 0;
+        y = (this.height - h) * Math.random() >> 0;
+
+        polygon = new Polygon([[x, y],[x + w, y],[x + w, y + h],[x, y + h]]);
+        polygon.velocity = new Vector(Math.random() * 20 + basicVelocity >> 0, Math.random() * 20 + basicVelocity >> 0);
+
+        this.objects.push(polygon);
     }
 
-    collider.collideWithField();
-}
-function run() {
-    tid = setTimeout(function () {
-        if (tid) {
-            run();
-        }
-    }, INTERVAL);
-    gameloop();
-}
-function stop() {
-    clearTimeout(tid);
-    tid = null;
-}
+    this.collider.gameField = new Polygon([[0, 0],[this.width, 0],[this.width, this.height],[0, this.height]]);
+    this.collider.addObject.apply(this.collider, this.objects);
+};
+Game.prototype.run = function () {
+    var game = this,
+        lastTime = null,
+        callback = function (t) {
+            if (lastTime === null) { lastTime = t }
 
-run();
+            var dt = (t - lastTime) * game.GAME_SPEED / 1000; /** delta of time passed from previous
+             * frame execution to the current frame (in seconds)
+             * */
+            var df = (t - lastTime) * game.GAME_SPEED * 60 / 1000; /** number of frame ticks passed from
+             * previous frame execution to the current frame (if it was 60 frame/sec)
+             * */
+
+            game.loop(dt);
+
+            lastTime = t;
+            if (game.raf) {
+                game.raf = window.requestAnimationFrame(callback);
+            } else {
+                lastTime = null;
+            }
+        };
+    if (!game.raf) {
+        game.raf = window.requestAnimationFrame(callback);
+    }
+};
+Game.prototype.runInterval = function () {
+    var game = this,
+        lastTime = null,
+        callback = function () {
+            var t = Date.now();
+            if (lastTime === null) { lastTime = t }
+            var dt = (t - lastTime) * game.GAME_SPEED / 1000; /** delta of time passed from previous
+             * frame execution to the current frame (in seconds)
+             * */
+            var df = (t - lastTime) * game.GAME_SPEED * 60 / 1000; /** number of frame ticks passed from
+             * previous frame execution to the current frame (if it was 60 frame/sec)
+             * */
+            game.loop(dt);
+
+            lastTime = t;
+            if (game.tid) {
+                game.tid = setTimeout(callback, game.INTERVAL);
+            } else {
+                lastTime = null;
+            }
+        };
+    if (!game.tid) {
+        game.tid = setTimeout(callback, 0);
+    }
+};
+Game.prototype.stop = function () {
+    if (this.raf) {
+        window.cancelAnimationFrame(this.raf);
+        this.raf = null;
+    }
+    if (this.tid) {
+        clearTimeout(this.tid);
+        this.tid = null;
+    }
+};
+Game.prototype.loop = function (dt) {
+    this.draw(dt);
+    this.update(dt);
+};
+Game.prototype.draw = function (dt) {
+    this.ctx.clearRect(0, 0, this.width, this.height);
+    for (var i = 0; i < this.objects.length; i++) {
+        var obj = this.objects[i];
+        obj.draw(this.ctx);
+    }
+};
+Game.prototype.update = function (dt) {
+    for (var i = 0; i < this.objects.length; i++) {
+        var obj = this.objects[i];
+        obj.move(dt);
+    }
+    this.collider.collideWithField();
+};
