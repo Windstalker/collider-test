@@ -21,30 +21,30 @@ Game.prototype.init = function () {
         polygon = null,
         basicVelocity = 100;
 
-    for (var i = 0, r, x, y, w, h; i < 3; i++) {
-        r = (Math.random() * 20 + 10) >> 0;
-        x = ((this.width - 2 * r) * Math.random() + r) >> 0;
-        y = ((this.height - 2 * r) * Math.random() + r) >> 0;
-
-        circle = new Circle(r, x, y);
-        circle.velocity = new Vector(Math.random() * 20 + basicVelocity >> 0, Math.random() * 20 + basicVelocity >> 0);
-//        circle.velocity = new Vector(50, 50);
-
-        this.objects.push(circle);
-
-        w = (Math.random() * 20 + 10) >> 0;
-        h = (Math.random() * 20 + 10) >> 0;
-        x = (this.width - w) * Math.random() >> 0;
-        y = (this.height - h) * Math.random() >> 0;
-
-        polygon = new Polygon([[x, y],[x + w, y],[x + w, y + h],[x, y + h]]);
-        polygon.velocity = new Vector(Math.random() * 20 + basicVelocity >> 0, Math.random() * 20 + basicVelocity >> 0);
-
-        this.objects.push(polygon);
-    }
-
-    this.collider.gameField = new Polygon([[0, 0],[this.width, 0],[this.width, this.height],[0, this.height]]);
-    this.collider.addObject.apply(this.collider, this.objects);
+//    for (var i = 0, r, x, y, w, h; i < 3; i++) {
+//        r = (Math.random() * 20 + 10) >> 0;
+//        x = ((this.width - 2 * r) * Math.random() + r) >> 0;
+//        y = ((this.height - 2 * r) * Math.random() + r) >> 0;
+//
+//        circle = new Circle(r, x, y);
+//        circle.velocity = new Vector(Math.random() * 20 + basicVelocity >> 0, Math.random() * 20 + basicVelocity >> 0);
+////        circle.velocity = new Vector(50, 50);
+//
+//        this.objects.push(circle);
+//
+//        w = (Math.random() * 20 + 10) >> 0;
+//        h = (Math.random() * 20 + 10) >> 0;
+//        x = (this.width - w) * Math.random() >> 0;
+//        y = (this.height - h) * Math.random() >> 0;
+//
+//        polygon = new Polygon([[x, y],[x + w, y],[x + w, y + h],[x, y + h]]);
+//        polygon.velocity = new Vector(Math.random() * 20 + basicVelocity >> 0, Math.random() * 20 + basicVelocity >> 0);
+//
+//        this.objects.push(polygon);
+//    }
+//
+//    this.collider.gameField = new Polygon([[0, 0],[this.width, 0],[this.width, this.height],[0, this.height]]);
+//    this.collider.addObject.apply(this.collider, this.objects);
 };
 Game.prototype.run = function () {
     var game = this,
@@ -123,5 +123,5 @@ Game.prototype.update = function (dt) {
         var obj = this.objects[i];
         obj.move(dt);
     }
-    this.collider.collideWithField();
+//    this.collider.collideWithField();
 };
