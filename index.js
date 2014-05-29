@@ -141,5 +141,5 @@ Game.prototype.update = function (dt) {
         var obj = this.objects[i];
         obj.move(dt);
     }
-    this.collider.collide();
+    this.collider.detectCollision();
 };
