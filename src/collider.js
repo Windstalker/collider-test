@@ -54,6 +54,32 @@ Collider.prototype.separationOnAxes = function (axes, shape0, shape1) {
     }
     return false;
 };
+Collider.prototype.getMTV = function (axes, shape0, shape1) {
+    var axis, pr0, pr1, overlap,
+        minOverlap = null,
+        collidingAxis;
+    for (var i = 0; i < axes.length; ++i) {
+        axis = axes[i];
+        pr0 = shape0.project(axis);
+        pr1 = shape1.project(axis);
+        overlap = pr0.getOverlap(pr1);
+        if (!(overlap > 0)) {
+            return {
+                axis: undefined,
+                overlap: 0
+            }; // Don't have to test remaining axes
+        }
+        if (minOverlap > overlap || minOverlap === null) {
+            minOverlap = overlap;
+            collidingAxis = axis;
+        }
+    }
+    // colliding axis and overlap
+    return {
+        axis: collidingAxis,
+        overlap: minOverlap
+    };
+};
 Collider.prototype.collideInsideAABB = function (content, container) {
     var contentBox = content.getBoundingBox(),
         containerBox = container.getBoundingBox();
@@ -83,19 +109,29 @@ Collider.prototype.collideInsideAABB = function (content, container) {
     return outOfX || outOfY
 };
 Collider.prototype.polygonWithPolygon = function (a, p0, p1) {
-    if (!this.separationOnAxes(a, p0, p1)) {
+    var mtvObj = this.getMTV(a, p0, p1);
+    if (mtvObj.axis) {
         //reaction here
     }
 };
 Collider.prototype.circleWithCircle = function (c0, c1) {
-    var d = new Vector(c1.center).subtract(c0.center).getMagnitude();
-    var overlap = c0.radius + c1.radius - d;
+    var d = new Vector(c0.center).subtract(c1.center);
+    var overlap = c0.radius + c1.radius - d.getMagnitude();
     if (overlap > 0) { //colliding rule
         //reaction here
+        var vDirection = c0.velocity.dot(c1.velocity);
+        var n0 = d.normalize();
+        var n1 = n0.invert();
+
+        c0.move(0, c0.velocity.invert().normalize().scale(overlap));
+        c1.move(0, c1.velocity.invert().normalize().scale(overlap));
+        c0.velocity = c0.velocity.subtract(n0.scale(c0.velocity.dot(n0) * 2));
+        c1.velocity = c1.velocity.subtract(n1.scale(c1.velocity.dot(n1) * 2));
     }
 };
 Collider.prototype.polygonWithCircle = function (a, p, c) {
-    if (!this.separationOnAxes(a, p, c)) {
+    var mtvObj = this.getMTV(a, p, c);
+    if (mtvObj.axis) {
         //reaction here
     }
 };

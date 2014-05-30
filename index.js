@@ -21,12 +21,15 @@ Game.prototype.init = function () {
     var circle = null,
         polygon = null,
         basicVelocity = 100,
-        perShapeCount = 3;
+        perShapeCount = 5;
 
     for (var i = 0, r, x, y, w, h; i < perShapeCount; i++) {
         r = (Math.random() * 20 + 10) >> 0;
         x = ((this.width - 2 * r) * Math.random() + r) >> 0;
         y = ((this.height - 2 * r) * Math.random() + r) >> 0;
+
+//        circle = new Circle({radius: 5, center: [20, 50], velocity: new Vector(30, 0)});
+//        polygon = new Circle({radius: 10, center: [100, 55], velocity: new Vector(10, 0)});
 
         circle = new Circle({
             radius: r,
