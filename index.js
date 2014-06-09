@@ -22,21 +22,17 @@ Game.prototype.init = function () {
         polygon = null,
         basicVelocity = 100,
         perShapeCount = 5;
-
+	/*
     for (var i = 0, r, x, y, w, h; i < perShapeCount; i++) {
         r = (Math.random() * 20 + 10) >> 0;
         x = ((this.width - 2 * r) * Math.random() + r) >> 0;
         y = ((this.height - 2 * r) * Math.random() + r) >> 0;
-
-//        circle = new Circle({radius: 5, center: [20, 50], velocity: new Vector(30, 0)});
-//        polygon = new Circle({radius: 10, center: [100, 55], velocity: new Vector(10, 0)});
 
         circle = new Circle({
             radius: r,
             center: [x,y],
             velocity: new Vector((Math.random() - 0.5) * basicVelocity >> 0, (Math.random() - 0.5) * basicVelocity >> 0)
         });
-//        circle.velocity = new Vector(50, 50);
 
         w = (Math.random() * 20 + 10) >> 0;
         h = (Math.random() * 20 + 10) >> 0;
@@ -50,6 +46,21 @@ Game.prototype.init = function () {
 
         this.objects.push(circle, polygon);
     }
+	*/
+
+	this.objects.push(
+		new Circle({
+			radius: 10,
+			center: [30,50],
+			velocity: new Vector(0, 0)
+		}),
+		new Circle({
+			radius: 10,
+			center: [200,50],
+			velocity: new Vector(-20, 0)
+		})
+	);
+
     this.collider.gameField = new Polygon({
         vertices: [
             [0, 0],
