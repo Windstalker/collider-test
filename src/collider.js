@@ -119,14 +119,23 @@ Collider.prototype.circleWithCircle = function (c0, c1) {
     var overlap = c0.radius + c1.radius - d.getMagnitude();
     if (overlap > 0) { //colliding rule
         //reaction here
-        var vDirection = c0.velocity.dot(c1.velocity);
         var n0 = d.normalize();
         var n1 = n0.invert();
+        var p0 = n0.orthogonal();
+        var p1 = n1.orthogonal();
 
         c0.move(0, c0.velocity.invert().normalize().scale(overlap));
         c1.move(0, c1.velocity.invert().normalize().scale(overlap));
-        c0.velocity = c0.velocity.subtract(n0.scale(c0.velocity.dot(n0) * 2));
-        c1.velocity = c1.velocity.subtract(n1.scale(c1.velocity.dot(n1) * 2));
+
+        var v0 = c0.velocity,
+            v1 = c1.velocity;
+
+        var v0p0 = p0.scale(v0.dot(p0)),
+            v0n0 = n0.scale(v0.dot(n0)),
+            v1p1 = p1.scale(v1.dot(p1)),
+            v1n1 = n1.scale(v1.dot(n1));
+        c0.velocity = v0p0.add(v1n1);
+        c1.velocity = v1p1.add(v0n0);
     }
 };
 Collider.prototype.polygonWithCircle = function (a, p, c) {
